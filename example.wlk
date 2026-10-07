@@ -1,79 +1,98 @@
-class ArmasDeFilo{
-  method filo()
-  method longitud()
-  method valorDeAtaque() {
-    return self.filo() * self.longitud()  
+class Armas{
+  method valorDeAtaque() 
+}
+
+
+class ArmasDeFilo inherits Armas {
+  const filo
+  const longitud
+  override method valorDeAtaque() {
+    return filo * longitud  
   }
 }
 
-class Espadas inherits ArmasDeFilo{
-  override method filo() {
-    return 0.5
-  }
-  override method longitud(){
-    return 85
+
+class ArmasContundentes inherits Armas{
+  const pesoDelArma 
+  override method valorDeAtaque() {
+    return pesoDelArma
   }
 }
 
-class Dagas inherits ArmasDeFilo{
-  override method filo() {
-    return 0.25
-  }
-  override method longitud(){
-    return 30
-  }
-}
 
-class Hachas inherits ArmasDeFilo{
-  override method filo() {
-    return 0.75
-  }
-  override method longitud(){
-    return 60
-  }
-}
-
-class ArmasContundentes{
-  method pesoDelArma() 
-  method valorDeAtaque() {
-    return self.pesoDelArma()
-  }
-}
-
-class Mazas inherits ArmasContundentes{
-  override method pesoDelArma() {
-    return 2
-  }
-}
-
-class Martillos inherits ArmasContundentes{
-  override method pesoDelArma() {
-    return 0.5
-  }
-}
-
-class Armadura {
-  var gladiadorPortador
-  method armaduraQueOtorga() 
-}
-
-class Casco inherits Armadura{
-  override method armaduraQueOtorga() {
+object Casco{
+  method armaduraQueOtorga(gladiador) {
     return 10
   }
 }
-class Escudos inherits Armadura{
-  override method armaduraQueOtorga() {
-    return 5 + (gladiadorPortador.destreza() * 0.1)
+object Escudos{
+  method armaduraQueOtorga(gladiador) {
+    return 5 + (gladiador.destreza() * 0.1)
   }
 }
 
-class Gladiadores{
-  method vida() = 100
-  method armadura()
-  method destreza() 
+class Gladiador{
+  var vida = 100 
+
+  method atacar(gladiador) {
+    gladiador.recibirDaño(self)
+  }
+  method recibirDaño(gladiador) {
+    vida = vida - self.poderDeAtaque() - gladiador.defensa()
+  }
+  method pelearCon(gladiador) {
+    self.atacar(gladiador)
+    gladiador.atacar(self)
+  }
+  method defensa()
 }
 
-class Mirmillones inherits Gladiadores{
+class Mirmillones inherits Gladiador{
+  var arma
+  var property fuerzaPromedio
+  var armadura
 
+  method destreza() = 15
+
+  method cambiarArmadura(otraArmadura) {
+    armadura=otraArmadura
+  }
+
+  method poderDeAtaque() = fuerzaPromedio + arma.valorDeAtaque()
+  override method defensa() = armadura.armaduraQueOtorga(self) + self.destreza()
+  method crearGrupo() {
+    return new Grupo(nombre = "mirmillolandia",miembros =0,miembros = [self,gladiador])
+  }
+}
+
+class Dimachaerus inherits Gladiador{
+  const arma *[]
+  var destreza
+
+  override method atacar(gladiador){
+    super(gladiador)
+    destreza =+ 1
+  } 
+  method fuerza() = 10 
+  method poderDeAtaque() = self.fuerza() + arma.sum({a => a.valorDeAtaque()})
+  override method defensa() = destreza/2 
+  method crearGrupo(gladiador) {
+    return new Grupo(nombre="D+" + self.fuerzaDeGrupo(gladiador), miembros=[self,gladiador])
+  }
+  method fuerzaDeGrupo(gladiador) {
+    return self.poderDeAtaque() + gladiador.poderDeAtaque()
+  }
+}
+
+class Grupo{
+  const nombre
+  var peleas = 0
+  const miembros = []
+
+  method agregarMiembro(gladiador) {
+    miembros.add(gladiador)
+  }
+  method quitarMiembro(gladiador) {
+    miembros.remove(gladiador)
+  }
 }
